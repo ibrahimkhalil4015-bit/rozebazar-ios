@@ -12,6 +12,9 @@ workflows:
     scripts:
       - name: Build Unsigned iOS App
         script: |
+          if [ -d "ios" ]; then
+            cd ios
+          fi
           # Compile the Xcode project into a .app bundle without signing certificates
           xcodebuild build \
             -project Rozebazar.xcodeproj \
@@ -25,9 +28,14 @@ workflows:
 
       - name: Package App into IPA
         script: |
+          if [ -d "ios" ]; then
+            cd ios
+          fi
           # Package the compiled .app into an installable .ipa file
           mkdir -p Payload
           cp -r build/Build/Products/Release-iphoneos/Rozebazar.app Payload/
           zip -r Rozebazar.ipa Payload
+          mv Rozebazar.ipa ../ 2>/dev/null || true
     artifacts:
       - "*.ipa"
+      - "ios/*.ipa"
